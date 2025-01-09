@@ -5,7 +5,7 @@ theme: seriph
 # like them? see https://unsplash.com/collections/94734566/slidev
 # background: https://cover.sli.dev
 # some information about your slides (markdown enabled)
-title: Welcome to Slidev
+title: Liquid Haskell
 info: |
   ## Slidev Starter Template
   Presentation slides for developers.
@@ -68,8 +68,10 @@ Liquid Haskell is a program verifier for haskell that has following features:
 - 🔣 **SMT-Solver** -  SAT + Theores (Uninterpreted Functions , Arithmetic , Arrays, Algebraic Datatypes, ...)
 - 📤 **GHC-Plugin** - You can use LH via LSP or on compilation
 - 🤔 **Reflection** - Allows to lift functions in haskell into decidable logic realm
-- 🟰 **PLE** - Proof by Logical Evaluation (PLE) makes LH a Theorem Prover
+- 🟰 **Proof by Logical Evaluation (PLE)** - Empowers LiquidHaskell as a theorem prover by automating logical evaluations. 
+
 <br>
+
 
 <!-- Read more about [Why Slidev?](https://sli.dev/guide/why) -->
 
@@ -155,450 +157,382 @@ level: 2
 ---
 # Code
 
-Use code snippets and get the highlighting directly, and even types hover!
-
-```haskell 
-{-@ incr :: Pos -> Pos @-}
-incr :: Int -> Int
-incr x = x + 1`
-```
-
-
-<!--
-Notes can also sync with clicks
-
-[click] This will be highlighted after the first click
-
-[click] Highlighted with `count = ref(0)`
-
-[click:3] Last click (skip two clicks)
--->
-
----
-level: 2
----
-
----
-level: 2
----
-# Shiki Magic Move
-
-Powered by [shiki-magic-move](https://shiki-magic-move.netlify.app/), Slidev supports animations across multiple code snippets.
-
-Add multiple code blocks and wrap them with <code>````md magic-move</code> (four backticks) to enable the magic move. For example:
 
 ````md magic-move {lines: true}
-```ts {*|2|*}
-// step 1
-head :: [a] -> a
-head (x : _ ) = x
+//step 1
+```haskell 
+tail :: [a] -> [a]
+tail (_:xs) = xs
+```
+```haskell
+tail :: [a] -> [a]
+tail (_:xs) = xs
+tail [] = error "tail: empty list"
+```
+//step 2
+```haskell
+tail :: [a] -> Maybe [a]
+tail (_:xs) =  Just xs
+tail [] = Nothing
+```
+```haskell {5-9}
+tail :: [a] -> Maybe [a]
+tail (_:xs) =  Just xs
+tail [] = Nothing
+
+-- Example list
+exampleList = [1, 2, 3, 4, 5]
+
+-- always need to handle the empty case
+result = tail exampleList >>= tail >>= tail
+```
+//step 3
+```haskell {*|1}
+{-@ tail :: {v:[a] | 0 < len v} -> a @-}
+tail :: [a] -> [a]
+tail (x:_) = x
 ```
 
-```ts {*|1-2|3-4|3-4,8}
-// step 2
-{-@ {x : [a] | len x > 0} -> a @-}
-head :: [a] -> a
-head (x : _ ) = x
+//step 5
+
+```haskell {5-6} 
+{-@ tail :: {v:[a] | 0 < len v} -> a @-}
+tail :: [a] -> [a]
+tail (x:_) = x
+
+x :: [Int]
+x = tail []
+```
+//step 6
+```haskell {7-18|9-11,14}
+{-@ tail :: {v:[a] | 0 < len v} -> a @-}
+tail :: [a] -> [a]
+tail (x:_) = x
+
+x :: [Int]
+x = tail []
+ .
+  >> The inferred type
+  >>   VV : {v : [GHC.Types.Int] | v == ?a
+  >>                               && len v == 0
+  >>                               && len v >= 0}
+  >> .
+  >> is not a subtype of the required type
+  >>   VV : {VV##1324 : [GHC.Types.Int] | len VV##1324 > 0}
+  >> .
+  >> in the context
+  >>   ?a : {?a : [GHC.Types.Int] | len ?a == 0
+  >>                                && len ?a >= 0}
+```
+````
+---
+layout: section
+---
+# Verifying Insersion Sort
+
+---
+level: 2
+transition: fade-out
+---
+
+
+## Defining insersion sort
+
+<div px-30 py-20>
+
+````md magic-move {lines: true}
+
+```haskell 
+insert :: (Ord a) => a -> List a -> List a
+insert x Emp = Cons x Emp
+insert x (Cons y ys)
+  | x <= y = Cons x (Cons y ys)
+  | otherwise = Cons y (insert x ys) 
+
 ```
 
-```ts
-// step 3
-export default {
-  data: () => ({
-    author: {
-      name: 'John Doe',
-      books: [
-        'Vue 2 - Advanced Guide',
-        'Vue 3 - Basic Guide',
-        'Vue 4 - The Mystery'
-      ]
-    }
-  })
-}
+```haskell {7-9} 
+insert :: (Ord a) => a -> List a -> List a
+insert x Emp = Cons x Emp
+insert x (Cons y ys)
+  | x <= y = Cons x (Cons y ys)
+  | otherwise = Cons y (insert x ys) 
+
+insertSort :: (Ord a) => List a -> List a
+insertSort Emp = Emp
+insertSort (Cons x xs) = insert x (insertSort xs)
 ```
 
-Non-code blocks are ignored.
+````
 
-```vue
-<!-- step 4 -->
-<script setup>
-const author = {
-  name: 'John Doe',
-  books: [
-    'Vue 2 - Advanced Guide',
-    'Vue 3 - Basic Guide',
-    'Vue 4 - The Mystery'
-  ]
-}
-</script>
+
+</div>
+
+---
+level: 2
+transition: fade-out
+---
+
+## Defining refinement type
+
+<div px-30 py-20>
+
+````md magic-move {lines: true}
+
+```haskell {*|1} 
+{-@ insert :: x:_ -> {xs:_ | isSorted xs} -> {ys:_ | isSorted ys } @-}
+insert :: (Ord a) => a -> List a -> List a
+insert x Emp = Cons x Emp
+insert x (Cons y ys)
+  | x <= y = Cons x (Cons y ys)
+  | otherwise = Cons y (insert x ys) 
+
 ```
 ````
 
----
-
-# Components
-
-<div grid="~ cols-2 gap-4">
-<div>
-
-You can use Vue components directly inside your slides.
-
-We have provided a few built-in components like `<Tweet/>` and `<Youtube/>` that you can use directly. And adding your custom components is also super easy.
-
-```html
-<Counter :count="10" />
-```
-
-<!-- ./components/Counter.vue -->
-<Counter :count="10" m="t-4" />
-
-Check out [the guides](https://sli.dev/builtin/components.html) for more.
-
+<div v-click mt-5>
+But we don't have 
+<code>isSorted</code> directive
+         defined in <span v-mark.red="3">refinement logic </span> 🤔
 </div>
-<div>
-
-```html
-<Tweet id="1390115482657726468" />
-```
-
-<Tweet id="1390115482657726468" scale="0.65" />
-
-</div>
-</div>
-
-<!--
-Presenter note with **bold**, *italic*, and ~~striked~~ text.
-
-Also, HTML elements are valid:
-<div class="flex w-full">
-  <span style="flex-grow: 1;">Left content</span>
-  <span>Right content</span>
-</div>
--->
-
----
-class: px-20
----
-
-# Themes
-
-Slidev comes with powerful theming support. Themes can provide styles, layouts, components, or even configurations for tools. Switching between themes by just **one edit** in your frontmatter:
-
-<div grid="~ cols-2 gap-2" m="t-2">
-
-```yaml
----
-theme: default
----
-```
-
-```yaml
----
-theme: seriph
----
-```
-
-<img border="rounded" src="https://github.com/slidevjs/themes/blob/main/screenshots/theme-default/01.png?raw=true" alt="">
-
-<img border="rounded" src="https://github.com/slidevjs/themes/blob/main/screenshots/theme-seriph/01.png?raw=true" alt="">
-
-</div>
-
-Read more about [How to use a theme](https://sli.dev/guide/theme-addon#use-theme) and
-check out the [Awesome Themes Gallery](https://sli.dev/resources/theme-gallery).
-
----
-
-# Clicks Animations
-
-You can add `v-click` to elements to add a click animation.
-
-<div v-click>
-
-This shows up when you click the slide:
-
-```html
-<div v-click>This shows up when you click the slide.</div>
-```
-
-</div>
-
-<br>
-
-<v-click>
-
-The <span v-mark.red="3"><code>v-mark</code> directive</span>
-also allows you to add
-<span v-mark.circle.orange="4">inline marks</span>
-, powered by [Rough Notation](https://roughnotation.com/):
-
-```html
-<span v-mark.underline.orange>inline markers</span>
-```
-
-</v-click>
-
-<div mt-20 v-click>
-
-[Learn more](https://sli.dev/guide/animations#click-animation)
 
 </div>
 
 ---
+level: 2
+transition: fade-out
+---
 
-# Motions
+## Lifting `isSorted` into Refinement Logic
 
-Motion animations are powered by [@vueuse/motion](https://motion.vueuse.org/), triggered by `v-motion` directive.
 
-```html
-<div
-  v-motion
-  :initial="{ x: -80 }"
-  :enter="{ x: 0 }"
-  :click-3="{ x: 80 }"
-  :leave="{ x: 1000 }"
->
-  Slidev
-</div>
+<div px-30 py-20>
+
+````md magic-move {lines: true}
+
+```haskell  
+isSorted :: (Ord a) => List a -> Bool
+isSorted Emp = True
+isSorted (Cons x xs) =
+  isSorted xs && case xs of
+    Emp -> True
+    Cons x1 xs1 -> x <= x1
+```
+```haskell {*|1} 
+{-@ reflect isSorted @-}
+isSorted :: (Ord a) => List a -> Bool
+isSorted Emp = True
+isSorted (Cons x xs) =
+  isSorted xs && case xs of
+    Emp -> True
+    Cons x1 xs1 -> x <= x1
 ```
 
-<div class="w-60 relative">
-  <div class="relative w-40 h-40">
-    <img
-      v-motion
-      :initial="{ x: 800, y: -100, scale: 1.5, rotate: -50 }"
-      :enter="final"
-      class="absolute inset-0"
-      src="https://sli.dev/logo-square.png"
-      alt=""
-    />
-    <img
-      v-motion
-      :initial="{ y: 500, x: -100, scale: 2 }"
-      :enter="final"
-      class="absolute inset-0"
-      src="https://sli.dev/logo-circle.png"
-      alt=""
-    />
-    <img
-      v-motion
-      :initial="{ x: 600, y: 400, scale: 2, rotate: 100 }"
-      :enter="final"
-      class="absolute inset-0"
-      src="https://sli.dev/logo-triangle.png"
-      alt=""
-    />
-  </div>
+```haskell {1-2} 
+-- make sure you add this or enable reflection through cabal options
+{-@ LIQUID "--reflection" @-} 
+{-@ reflect isSorted @-}
+isSorted :: (Ord a) => List a -> Bool
+isSorted Emp = True
+isSorted (Cons x xs) =
+  isSorted xs && case xs of
+    Emp -> True
+    Cons x1 xs1 -> x <= x1
+```
 
-  <div
-    class="text-5xl absolute top-14 left-40 text-[#2B90B6] -z-1"
-    v-motion
-    :initial="{ x: -80, opacity: 0}"
-    :enter="{ x: 0, opacity: 1, transition: { delay: 2000, duration: 1000 } }">
-    Slidev
-  </div>
-</div>
+```haskell {3} 
+-- make sure you add this or enable reflection through cabal options
+{-@ LIQUID "--reflection" @-} 
+{-@ LIQUID "--ple" @-} 
+{-@ reflect isSorted @-}
+isSorted :: (Ord a) => List a -> Bool
+isSorted Emp = True
+isSorted (Cons x xs) =
+  isSorted xs && case xs of
+    Emp -> True
+    Cons x1 xs1 -> x <= x1
+```
 
-<!-- vue script setup scripts can be directly used in markdown, and will only affects current page -->
-<script setup lang="ts">
-const final = {
-  x: 0,
-  y: 0,
-  rotate: 0,
-  scale: 1,
-  transition: {
-    type: 'spring',
-    damping: 10,
-    stiffness: 20,
-    mass: 2
-  }
-}
-</script>
-
-<div
-  v-motion
-  :initial="{ x:35, y: 30, opacity: 0}"
-  :enter="{ y: 0, opacity: 1, transition: { delay: 3500 } }">
-
-[Learn more](https://sli.dev/guide/animations.html#motion)
+```haskell {1} 
+{-@ measure isSorted @-}
+isSorted :: (Ord a) => List a -> Bool
+isSorted Emp = True
+isSorted (Cons x xs) =
+  isSorted xs && case xs of
+    Emp -> True
+    Cons x1 xs1 -> x <= x1
+```
+````
 
 </div>
 
 ---
-
-# LaTeX
-
-LaTeX is supported out-of-box. Powered by [KaTeX](https://katex.org/).
-
-<div h-3 />
-
-Inline $\sqrt{3x-1}+(1+x)^2$
-
-Block
-$$ {1|3|all}
-\begin{aligned}
-\nabla \cdot \vec{E} &= \frac{\rho}{\varepsilon_0} \\
-\nabla \cdot \vec{B} &= 0 \\
-\nabla \times \vec{E} &= -\frac{\partial\vec{B}}{\partial t} \\
-\nabla \times \vec{B} &= \mu_0\vec{J} + \mu_0\varepsilon_0\frac{\partial\vec{E}}{\partial t}
-\end{aligned}
-$$
-
-[Learn more](https://sli.dev/features/latex)
-
+level: 2
+transition: fade-out
 ---
 
-# Diagrams
+## Verifying sortedness in Haskell 
 
-You can create diagrams / graphs from textual descriptions, directly in your Markdown.
 
-<div class="grid grid-cols-4 gap-5 pt-4 -mb-6">
+<div px-30 py-20>
 
-```mermaid {scale: 0.5, alt: 'A simple sequence diagram'}
-sequenceDiagram
-    Alice->John: Hello John, how are you?
-    Note over Alice,John: A typical interaction
+````md magic-move {lines: true}
+
+```haskell  
+{-@ sortedList' :: {v: Bool | v} @-}
+sortedList' = isSorted (Cons 2 (Cons 1 Emp))
+```
+```haskell  {1-4}
+
+{-@ type TRUE  = {v:Bool | v    } @-}
+{-@ type FALSE = { v: Bool | not v } @-}
+
+{-@ sortedList' :: TRUE @-}
+sortedList' = isSorted (Cons 2 (Cons 1 Emp))
 ```
 
-```mermaid {theme: 'neutral', scale: 0.8}
-graph TD
-B[Text] --> C{Decision}
-C -->|One| D[Result 1]
-C -->|Two| E[Result 2]
+```haskell  {6-16}
+{-@ type TRUE  = {v:Bool | v    } @-}
+{-@ type FALSE = { v: Bool | not v } @-}
+
+{-@ sortedList' :: TRUE @-}
+sortedList' = isSorted (Cons 2 (Cons 1 Emp))
+ >> .
+ >> The inferred type
+ >>   VV : {v : GHC.Types.Bool | (v == Demo.Sorting.isSorted 
+ >>             (Demo.Sorting.Cons (GHC.Num.Integer.IS 2) 
+ >>             (Demo.Sorting.Cons (GHC.Num.Integer.IS 1) Demo.Sorting.Emp)))
+ >> .
+ >> is not a subtype of the required type
+ >>   VV : {VV##2509 : GHC.Types.Bool | VV##2509}
 ```
 
-```mermaid
-mindmap
-  root((mindmap))
-    Origins
-      Long history
-      ::icon(fa fa-book)
-      Popularisation
-        British popular psychology author Tony Buzan
-    Research
-      On effectiveness<br/>and features
-      On Automatic creation
-        Uses
-            Creative techniques
-            Strategic planning
-            Argument mapping
-    Tools
-      Pen and paper
-      Mermaid
-```
-
-```plantuml {scale: 0.7}
-@startuml
-
-package "Some Group" {
-  HTTP - [First Component]
-  [Another Component]
-}
-
-node "Other Groups" {
-  FTP - [Second Component]
-  [First Component] --> FTP
-}
-
-cloud {
-  [Example 1]
-}
-
-database "MySql" {
-  folder "This is my folder" {
-    [Folder 3]
-  }
-  frame "Foo" {
-    [Frame 4]
-  }
-}
-
-[Another Component] --> [Example 1]
-[Example 1] --> [Folder 3]
-[Folder 3] --> [Frame 4]
-
-@enduml
-```
-
+````
 </div>
 
-Learn more: [Mermaid Diagrams](https://sli.dev/features/mermaid) and [PlantUML Diagrams](https://sli.dev/features/plantuml)
-
 ---
-foo: bar
-dragPos:
-  square: 691,32,167,_,-16
+level: 2
+transition: fade-out
 ---
 
-# Draggable Elements
+## Verifying sortedness in logic
 
-Double-click on the draggable elements to edit their positions.
 
-<br>
+<div px-30 py-20>
 
-###### Directive Usage
+````md magic-move {lines: true}
 
-```md
-<img v-drag="'square'" src="https://sli.dev/logo.png">
+```haskell  
+import Language.Haskell.Liquid.ProofCombinators
+{-@ sortedList :: {v : () |  isSorted (Cons 1 (Cons 3  Emp)) == True} @-}
+sortedList :: ()
+sortedList =
+  (isSorted (Cons 1 (Cons 3 Emp :: List Int)))
+    === (isSorted (Cons 3 Emp) && 1 <= 3)
+    === (isSorted (Emp :: List Int) && True && 1 <= 3)
+    === True
+    *** QED
 ```
 
-<br>
-
-###### Component Usage
-
-```md
-<v-drag text-3xl>
-  <div class="i-carbon:arrow-up" />
-  Use the `v-drag` component to have a draggable container!
-</v-drag>
+```haskell  
+{-@ sortedList :: {isSorted (Cons 1 (Cons 3  Emp)) == True} @-}
+sortedList :: ()
+sortedList =
+  (isSorted (Cons 1 (Cons 3 Emp :: List Int)))
+    === (isSorted (Cons 3 Emp) && 1 <= 3)
+    === (isSorted (Emp :: List Int) && True && 1 <= 3)
+    === True
+    *** QED
+```
+```haskell {1}  
+{-@ LIQUID "--ple" @-} 
+{-@ sortedList :: {isSorted (Cons 1 (Cons 3  Emp)) == True} @-}
+sortedList :: ()
+sortedList =
+  (isSorted (Cons 1 (Cons 3 Emp :: List Int)))
+    === (isSorted (Cons 3 Emp) && 1 <= 3)
+    === (isSorted (Emp :: List Int) && True && 1 <= 3)
+    === True
+    *** QED
+```
+```haskell   
+{-@ LIQUID "--ple" @-} 
+{-@ sortedList :: {isSorted (Cons 1 (Cons 3  Emp)) == True} @-}
+sortedList :: ()
+sortedList = () -- LH can now evaluate it on it's own
 ```
 
-<v-drag pos="663,206,261,_,-15">
-  <div text-center text-3xl border border-main rounded>
-    Double-click me!
-  </div>
-</v-drag>
-
-<img v-drag="'square'" src="https://sli.dev/logo.png">
-
-###### Draggable Arrow
-
-```md
-<v-drag-arrow two-way />
-```
-
-<v-drag-arrow pos="67,452,253,46" two-way op70 />
+````
+</div>
 
 ---
-src: ./pages/imported-slides.md
-hide: false
+level: 2
+transition: fade-out
 ---
 
----
+## Insertion proof
 
-# Monaco Editor
 
-Slidev provides built-in Monaco Editor support.
+<div px-30 py-20>
 
-Add `{monaco}` to the code block to turn it into an editor:
+````md magic-move {lines: true}
 
-```ts {monaco}
-import { ref } from 'vue'
-import { emptyArray } from './external'
-
-const arr = ref(emptyArray(10))
+```haskell  {*|6} 
+{-@ insert :: x:_ -> {xs:_ | isSorted xs} -> {ys:_ | isSorted ys } @-}
+insert :: (Ord a) => a -> List a -> List a
+insert x Emp = Cons x Emp
+insert x (Cons y ys)
+  | x <= y = Cons x (Cons y ys)
+  | otherwise = Cons y (insert x ys)  -- LH can't figure this out
 ```
 
-Use `{monaco-run}` to create an editor that can execute the code directly in the slide:
-
-```ts {monaco-run}
-import { version } from 'vue'
-import { emptyArray, sayHello } from './external'
-
-sayHello()
-console.log(`vue ${version}`)
-console.log(emptyArray<number>(10).reduce(fib => [...fib, fib.at(-1)! + fib.at(-2)!], [1, 1]))
+```haskell {6}  
+{-@ insert :: x:_ -> {xs:_ | isSorted xs} -> {ys:_ | isSorted ys } @-}
+insert :: (Ord a) => a -> List a -> List a
+insert x Emp = Cons x Emp
+insert x (Cons y ys)
+  | x <= y = Cons x (Cons y ys)
+  | otherwise = Cons y (insert x ys)  `withProof` lem_ins y x ys
 ```
+
+```haskell {8-12}   
+{-@ insert :: x:_ -> {xs:_ | isSorted xs} -> {ys:_ | isSorted ys } @-}
+insert :: (Ord a) => a -> List a -> List a
+insert x Emp = Cons x Emp
+insert x (Cons y ys)
+  | x <= y = Cons x (Cons y ys)
+  | otherwise = Cons y (insert x ys)  `withProof` lem_ins y x ys
+
+{-@ lem_ins :: y:_ -> {x:_ | y < x} -> {ys: _ | isSorted (Cons y ys)} 
+    -> {isSorted (Cons y (insert x ys))} @-}
+lem_ins :: (Ord a) => a -> a -> List a -> Bool
+lem_ins y x Emp = True
+lem_ins y x (Cons y1 ys) = if y1 < x then lem_ins y1 x ys else True
+```
+```haskell{2-3,16-19}
+{-@ reflect insert @-}
+{-@ insert :: x:_ -> {xs:_ | isSorted xs} 
+    -> {ys:_ | isSorted ys && Map_union (singelton x) (bag xs) == bag ys  } @-}
+insert :: (Ord a) => a -> List a -> List a
+insert x Emp = Cons x Emp
+insert x (Cons y ys)
+  | x <= y = Cons x (Cons y ys)
+  | otherwise = Cons y (insert x ys) `withProof` lem_ins y x ys
+
+{-@ lem_ins :: y:_ -> {x:_ | y < x} -> {ys: _ | isSorted (Cons y ys)} 
+    -> {isSorted (Cons y (insert x ys))} @-}
+lem_ins :: (Ord a) => a -> a -> List a -> Bool
+lem_ins y x Emp = True
+lem_ins y x (Cons y1 ys) = if y1 < x then lem_ins y1 x ys else True
+
+{-@ insertSort :: xs:_ -> {ys:_ | isSorted ys && bag xs == bag ys} @-}
+insertSort :: (Ord a) => List a -> List a
+insertSort Emp = Emp
+insertSort (Cons x xs) = insert x (insertSort xs)
+```
+
+````
+</div>
 
 ---
 layout: center
