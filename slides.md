@@ -107,55 +107,9 @@ layoutClass: gap-16
 <Toc text-sm minDepth="1" maxDepth="2" />
 
 ---
-level: 2
+level: 1
 ---
-# SAT
-<br>
-
--  **SAT:** A tool that solves the Boolean Satisfiability Problem (SAT)
-
-- **Problem:** Determine if there exists an interpretation that satisfies a given Boolean formula.
-
-- **Example:** For the formula (𝐴 ∨ ¬𝐵) ∧ (𝐵 ∨ 𝐶), find truth values for 𝐴, 𝐵, and 𝐶 that make the formula true.
-
--  **SAT-Solver:** -  Algorithms designed to solve SAT problems efficiently.
-
--  **Applications:** -  In Liquid haskell we use it in SMT Solver for verification.
-
-<br>
----
-level: 2
----
-
-# SMT Solver
-
-SMT (Satisfiability Modulo Theories) solvers are tools that can check the satisfiability of logical
-formulas in a specific theory. 
-
-
-Extends SAT solvers by adding various theories:
-
-- **Uninterpreted Functions**: Functions without a fixed interpretation.
-
-- **Arithmetic**: Involves numerical calculations and equations.
-
-- **Arrays**: Data structures that store elements in indexed collections.
-
-- **Algebraic Datatypes**: Data types defined by combining other types.
-
-example:
-$$
-x + y \leq 10 \quad and \quad x = y - 7
-$$
----
-level: 2
----
-
-
----
-level: 2
----
-# Code
+# Refinement Types
 
 
 ````md magic-move {lines: true}
@@ -225,6 +179,48 @@ x = tail []
   >>                                && len ?a >= 0}
 ```
 ````
+---
+level: 1
+---
+# SAT
+<br>
+
+-  **SAT:** A tool that solves the Boolean Satisfiability Problem (SAT)
+
+- **Problem:** Determine if there exists an interpretation that satisfies a given Boolean formula.
+
+- **Example:** For the formula (𝐴 ∨ ¬𝐵) ∧ (𝐵 ∨ 𝐶), find truth values for 𝐴, 𝐵, and 𝐶 that make the formula true.
+
+-  **SAT-Solver:** -  Algorithms designed to solve SAT problems efficiently.
+
+-  **Applications:** -  In Liquid haskell we use it in SMT Solver for verification.
+
+<br>
+---
+level: 1
+---
+
+# SMT Solver
+
+SMT (Satisfiability Modulo Theories) solvers are tools that can check the satisfiability of logical
+formulas in a specific theory. 
+
+
+Extends SAT solvers by adding various theories:
+
+- **Uninterpreted Functions**: Functions without a fixed interpretation.
+
+- **Arithmetic**: Involves numerical calculations and equations.
+
+- **Arrays**: Data structures that store elements in indexed collections.
+
+- **Algebraic Datatypes**: Data types defined by combining other types.
+
+example:
+$$
+x + y \leq 10 \quad and \quad x = y - 7
+$$
+
 ---
 layout: section
 ---
