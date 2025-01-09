@@ -107,7 +107,52 @@ layoutClass: gap-16
 ---
 level: 2
 ---
+# SAT
+<br>
 
+-  **SAT:** A tool that solves the Boolean Satisfiability Problem (SAT)
+
+- **Problem:** Determine if there exists an interpretation that satisfies a given Boolean formula.
+
+- **Example:** For the formula (𝐴 ∨ ¬𝐵) ∧ (𝐵 ∨ 𝐶), find truth values for 𝐴, 𝐵, and 𝐶 that make the formula true.
+
+-  **SAT-Solver:** -  Algorithms designed to solve SAT problems efficiently.
+
+-  **Applications:** -  In Liquid haskell we use it in SMT Solver for verification.
+
+<br>
+---
+level: 2
+---
+
+# SMT Solver
+
+SMT (Satisfiability Modulo Theories) solvers are tools that can check the satisfiability of logical
+formulas in a specific theory. 
+
+
+Extends SAT solvers by adding various theories:
+
+- **Uninterpreted Functions**: Functions without a fixed interpretation.
+
+- **Arithmetic**: Involves numerical calculations and equations.
+
+- **Arrays**: Data structures that store elements in indexed collections.
+
+- **Algebraic Datatypes**: Data types defined by combining other types.
+
+example:
+$$
+x + y \leq 10 \quad and \quad x = y - 7
+$$
+---
+level: 2
+---
+
+
+---
+level: 2
+---
 # Code
 
 Use code snippets and get the highlighting directly, and even types hover!
@@ -133,6 +178,9 @@ Notes can also sync with clicks
 level: 2
 ---
 
+---
+level: 2
+---
 # Shiki Magic Move
 
 Powered by [shiki-magic-move](https://shiki-magic-move.netlify.app/), Slidev supports animations across multiple code snippets.
