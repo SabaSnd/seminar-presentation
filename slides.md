@@ -3,7 +3,7 @@
 theme: seriph
 # random image from a curated Unsplash collection by Anthony
 # like them? see https://unsplash.com/collections/94734566/slidev
-background: https://cover.sli.dev
+# background: https://cover.sli.dev
 # some information about your slides (markdown enabled)
 title: Welcome to Slidev
 info: |
@@ -22,23 +22,34 @@ transition: slide-left
 mdc: true
 ---
 
-# Welcome to Slidev
+# LiquidHaskell
 
-Presentation slides for developers
+Mehran Shahidi, Saba Safarnezhad
 
-<div @click="$slidev.nav.next" class="mt-12 py-1" hover:bg="white op-10">
+<!-- <div @click="$slidev.nav.next" class="mt-12 py-1" hover:bg="white op-10">
   Press Space for next page <carbon:arrow-right />
-</div>
+</div> -->
 
 <div class="abs-br m-6 text-xl">
   <button @click="$slidev.nav.openInEditor" title="Open in Editor" class="slidev-icon-btn">
     <carbon:edit />
   </button>
-  <a href="https://github.com/slidevjs/slidev" target="_blank" class="slidev-icon-btn">
+  <a href="https://github.com/m3hransh/seminar-pl/" target="_blank" class="slidev-icon-btn">
     <carbon:logo-github />
   </a>
 </div>
 
+<style>
+h1 {
+  background-color:rgba(184, 39, 175, 0.71);
+  background-image: linear-gradient(45deg, #4EC5D4 10%,rgb(99, 7, 111) 50%);
+  background-size: 100%;
+  -webkit-background-clip: text;
+  -moz-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -moz-text-fill-color: transparent;
+}
+</style>
 <!--
 The last comment block of each slide will be treated as slide notes. It will be visible and editable in Presenter Mode along with the slide. [Read more in the docs](https://sli.dev/guide/syntax.html#notes)
 -->
@@ -51,7 +62,7 @@ transition: fade-out
 
 Slidev is a slides maker and presenter designed for developers, consist of the following features
 
-- 📝 **Text-based** - focus on the content with Markdown, and then style them later
+- 📝 **Refinement Types** - focus on the content with Markdown, and then style them later
 - 🎨 **Themable** - themes can be shared and re-used as npm packages
 - 🧑‍💻 **Developer Friendly** - code highlighting, live coding with autocompletion
 - 🤹 **Interactive** - embed Vue components to enhance your expressions
@@ -70,7 +81,7 @@ Learn more: https://sli.dev/features/slide-scope-style
 
 <style>
 h1 {
-  background-color: #2B90B6;
+  background-color:rgba(184, 39, 175, 0.71);
   background-image: linear-gradient(45deg, #4EC5D4 10%, #146b8c 20%);
   background-size: 100%;
   -webkit-background-clip: text;
