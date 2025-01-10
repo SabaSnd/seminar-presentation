@@ -26,6 +26,10 @@ mdc: true
 
 Mehran Shahidi, Saba Safarnezhad
 
+Supervised by
+
+Cass Alexandru, M.Sc.
+
 <!-- <div @click="$slidev.nav.next" class="mt-12 py-1" hover:bg="white op-10">
   Press Space for next page <carbon:arrow-right />
 </div> -->
@@ -228,6 +232,35 @@ layout: section
 
 ---
 level: 2
+---
+
+## Add LH as plugin to GHC
+
+
+<div px-30 py-20>
+
+```json {*|7-13|15}
+ // .cabal 
+ cabal-version: 1.12
+
+ name:           lh-plugin-demo
+ version:        0.1.0.0
+ ...
+ ...
+   build-depends:
+       liquid-prelude,
+       liquid-vector,
+       liquidhaskell,
+       base,
+       containers,
+       vector
+   default-language: Haskell2010
+   ghc-options:  -fplugin=LiquidHaskell
+```
+</div>
+
+---
+level: 2
 transition: fade-out
 ---
 
@@ -419,18 +452,20 @@ transition: fade-out
 ````md magic-move {lines: true}
 
 ```haskell  
-import Language.Haskell.Liquid.ProofCombinators
 {-@ sortedList :: {v : () |  isSorted (Cons 1 (Cons 3  Emp)) == True} @-}
 sortedList :: ()
-sortedList =
-  (isSorted (Cons 1 (Cons 3 Emp :: List Int)))
-    === (isSorted (Cons 3 Emp) && 1 <= 3)
-    === (isSorted (Emp :: List Int) && True && 1 <= 3)
-    === True
-    *** QED
+sortedList = () -- Error: can't figure it out on its own
 ```
 
-```haskell  
+```haskell {1} 
+import Language.Haskell.Liquid.ProofCombinators
+{-@ sortedList :: {isSorted (Cons 1 (Cons 3  Emp)) == True} @-}
+sortedList :: ()
+sortedList = ()
+```
+
+```haskell {5-9}  
+import Language.Haskell.Liquid.ProofCombinators
 {-@ sortedList :: {isSorted (Cons 1 (Cons 3  Emp)) == True} @-}
 sortedList :: ()
 sortedList =
@@ -459,9 +494,11 @@ sortedList = () -- LH can now evaluate it on it's own
 ```
 
 ````
+
 </div>
 
 ---
+layout: normal
 level: 2
 transition: fade-out
 ---
@@ -469,7 +506,7 @@ transition: fade-out
 ## Insertion proof
 
 
-<div px-30 py-20>
+<div px-30 py-10>
 
 ````md magic-move {lines: true}
 
@@ -491,7 +528,7 @@ insert x (Cons y ys)
   | otherwise = Cons y (insert x ys)  `withProof` lem_ins y x ys
 ```
 
-```haskell {8-12}   
+```haskell {8-12|*}   
 {-@ insert :: x:_ -> {xs:_ | isSorted xs} -> {ys:_ | isSorted ys } @-}
 insert :: (Ord a) => a -> List a -> List a
 insert x Emp = Cons x Emp
@@ -505,6 +542,24 @@ lem_ins :: (Ord a) => a -> a -> List a -> Bool
 lem_ins y x Emp = True
 lem_ins y x (Cons y1 ys) = if y1 < x then lem_ins y1 x ys else True
 ```
+
+```haskell{2,3}
+{-@ reflect insert @-}
+{-@ insert :: x:_ -> {xs:_ | isSorted xs} 
+    -> {ys:_ | isSorted ys && Map_union (singelton x) (bag xs) == bag ys  } @-}
+insert :: (Ord a) => a -> List a -> List a
+insert x Emp = Cons x Emp
+insert x (Cons y ys)
+  | x <= y = Cons x (Cons y ys)
+  | otherwise = Cons y (insert x ys) `withProof` lem_ins y x ys
+
+{-@ lem_ins :: y:_ -> {x:_ | y < x} -> {ys: _ | isSorted (Cons y ys)} 
+    -> {isSorted (Cons y (insert x ys))} @-}
+lem_ins :: (Ord a) => a -> a -> List a -> Bool
+lem_ins y x Emp = True
+lem_ins y x (Cons y1 ys) = if y1 < x then lem_ins y1 x ys else True
+```
+
 ```haskell{2-3,16-19}
 {-@ reflect insert @-}
 {-@ insert :: x:_ -> {xs:_ | isSorted xs} 
@@ -528,6 +583,7 @@ insertSort (Cons x xs) = insert x (insertSort xs)
 ```
 
 ````
+<div v-click="[4, 5]"  >Is all the original elements exist in sorted list 🤔</div>
 </div>
 
 ---
