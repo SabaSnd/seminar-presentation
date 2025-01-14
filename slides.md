@@ -105,18 +105,6 @@ Here is another comment.
 {{ $page }}
 </div>
 ---
-layout: two-cols
-layoutClass: gap-16
----
-
-# Table of contents
-
-<Toc text-sm minDepth="1" maxDepth="2" />
-
-<div class="absolute bottom-0  right-0 p-10">
-{{ $page }}
-</div>
----
 level: 1
 ---
 # Refinement Types
@@ -350,6 +338,92 @@ efficient interaction through various
 interfaces and includes advanced features
  for optimization and logical analysis.
 -->
+
+
+---
+---
+## Z3 examples
+
+$$(Tie \lor Shirt) \land (\lnot Tie \lor Shirt) \land (\lnot Tie \lor \lnot Shirt)$$
+
+
+<br>
+<br>
+
+<div class="grid grid-cols-2 gap-4 ">
+  <div>
+
+    SMTLIB2
+
+
+````md magic-move {lines: true}
+
+```lisp 
+  (set-logic QF_UF)
+  (declare-const Tie Bool)
+  (declare-const Shirt Bool)
+  (assert (or Tie Shirt))
+  (assert (or (not Tie) Shirt))
+  (assert (or (not Tie) (not Shirt)))
+  (check-sat)
+  (get-model)
+
+```
+```lisp {10-14}
+  (set-logic QF_UF)
+  (declare-const Tie Bool)
+  (declare-const Shirt Bool)
+  (assert (or Tie Shirt))
+  (assert (or (not Tie) Shirt))
+  (assert (or (not Tie) (not Shirt)))
+  (check-sat)
+  (get-model)
+
+>>   sat
+>>   (model
+>>     (define-fun Tie () Bool false)
+>>     (define-fun Shirt () Bool true)
+>>   )
+```
+
+````
+
+  </div>
+  <div>
+
+    Python
+
+````md magic-move {lines: true}
+```python 
+
+  from z3 import Bools, Solver, Or, Not
+  Tie, Shirt = Bools('Tie Shirt')
+  s = Solver()
+  s.add(Or(Tie, Shirt),
+        Or(Not(Tie), Shirt),
+        Or(Not(Tie), Not(Shirt)))
+  print(s.check())
+  print(s.model())
+```
+
+```python {10-13}
+
+  from z3 import Bools, Solver, Or, Not
+  Tie, Shirt = Bools('Tie Shirt')
+  s = Solver()
+  s.add(Or(Tie, Shirt),
+        Or(Not(Tie), Shirt),
+        Or(Not(Tie), Not(Shirt)))
+  print(s.check())
+  print(s.model())
+
+>>  sat
+>>
+>>  [Tie = False, Shirt = True]
+```
+````
+  </div>
+</div>
 
 ---
 layout: section
