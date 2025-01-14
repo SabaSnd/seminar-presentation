@@ -587,12 +587,21 @@ insertSort (Cons x xs) = insert x (insertSort xs)
 </div>
 
 ---
-layout: center
-class: text-center
+layout: two-cols
 ---
 
 # Learn More
 
-[Documentation](https://sli.dev) · [GitHub](https://github.com/slidevjs/slidev) · [Showcases](https://sli.dev/resources/showcases)
+- [GitHub (code examples and seminar report)](https://github.com/m3hransh/seminar-pl) 
+- [LiquidHaskell Documentation](https://ucsd-progsys.github.io/liquidhaskell/) 
 
+<footer class="absolute bottom-0 left-0 right-0 p-10">
 <PoweredBySlidev mt-10 />
+</footer>
+::right::
+
+<div py-20 px-20>
+<img  src="./images/qr-code.png">
+
+</div>
+

@@ -8,4 +8,9 @@ To start the slide show:
 
 Edit the [slides.md](./slides.md) to see the changes.
 
+To build it locally using `pnpm`
+- `pnpm build`
+- `pnpm dlx vite preview`
+
+
 Learn more about Slidev at the [documentation](https://sli.dev/).
