@@ -101,6 +101,9 @@ Here is another comment.
 -->
 
 
+<div class="absolute bottom-0  right-0 p-10">
+{{ $page }}
+</div>
 ---
 layout: two-cols
 layoutClass: gap-16
@@ -110,6 +113,9 @@ layoutClass: gap-16
 
 <Toc text-sm minDepth="1" maxDepth="2" />
 
+<div class="absolute bottom-0  right-0 p-10">
+{{ $page }}
+</div>
 ---
 level: 1
 ---
@@ -148,7 +154,7 @@ result = tail exampleList >>= tail >>= tail
 ```haskell {*|1}
 {-@ tail :: {v:[a] | 0 < len v} -> a @-}
 tail :: [a] -> [a]
-tail (x:_) = x
+tail (x : _) = x
 ```
 
 //step 5
@@ -156,7 +162,7 @@ tail (x:_) = x
 ```haskell {5-6} 
 {-@ tail :: {v:[a] | 0 < len v} -> a @-}
 tail :: [a] -> [a]
-tail (x:_) = x
+tail (x : _) = x
 
 x :: [Int]
 x = tail []
@@ -165,7 +171,7 @@ x = tail []
 ```haskell {7-18|9-11,14}
 {-@ tail :: {v:[a] | 0 < len v} -> a @-}
 tail :: [a] -> [a]
-tail (x:_) = x
+tail (x : _) = x
 
 x :: [Int]
 x = tail []
@@ -183,23 +189,34 @@ x = tail []
   >>                                && len ?a >= 0}
 ```
 ````
+
+<div class="absolute bottom-0  right-0 p-10">
+{{ $page }}
+</div>
 ---
 level: 1
 ---
 # SAT
+<v-clicks>
+
+- **Definition:** Determines if a Boolean formula can be satisfied by assigning truth values to variables.  
+
+- **Problem:** Find an assignment that makes the formula true.  
+
+- **Example:** (𝐴 ∨ ¬𝐵) ∧ (𝐵 ∨ 𝐶)  
+  - Satisfying assignment: $A = \text{true}, B = \text{false}, C = \text{true}$.  
+- **SAT Solvers:** Efficient algorithms to solve SAT problems.  
+- **Applications:**  
+  - Formal verification (software and hardware).  
+  - Liquid Haskell (SMT solvers for program verification).  
+
+</v-clicks>
 <br>
 
--  **SAT:** A tool that solves the Boolean Satisfiability Problem (SAT)
+<div class="absolute bottom-0  right-0 p-10">
+{{ $page }}
+</div>
 
-- **Problem:** Determine if there exists an interpretation that satisfies a given Boolean formula.
-
-- **Example:** For the formula (𝐴 ∨ ¬𝐵) ∧ (𝐵 ∨ 𝐶), find truth values for 𝐴, 𝐵, and 𝐶 that make the formula true.
-
--  **SAT-Solver:** -  Algorithms designed to solve SAT problems efficiently.
-
--  **Applications:** -  In Liquid haskell we use it in SMT Solver for verification.
-
-<br>
 ---
 level: 1
 ---
@@ -225,11 +242,44 @@ $$
 x + y \leq 10 \quad and \quad x = y - 7
 $$
 
+
+<div class="absolute bottom-0  right-0 p-10">
+{{ $page }}
+</div>
+---
+---
+# Z3 Architecture
+
+<div class="custom-image-container">
+<img  src="./images/smt.svg">
+</div>
+
+
+<!--
+Hello
+-->
+<style>
+.custom-image-container {
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center;    /* Center vertically */
+}
+.custom-image-container img {
+  max-width: 70%; /* Prevent image overflow */
+  height: auto;    /* Maintain aspect ratio */
+}</style>
+
+<div class="absolute bottom-0  right-0 p-10">
+{{ $page }}
+</div>
 ---
 layout: section
 ---
-# Verifying Insersion Sort
+# Verifying Insertion Sort
 
+<div class="absolute bottom-0  right-0 p-10">
+{{ $page }}
+</div>
 ---
 level: 2
 ---
@@ -259,13 +309,16 @@ level: 2
 ```
 </div>
 
+<div class="absolute bottom-0  right-0 p-10">
+{{ $page }}
+</div>
 ---
 level: 2
 transition: fade-out
 ---
 
 
-## Defining insersion sort
+## Defining insertion sort
 
 <div px-30 py-20>
 
@@ -273,7 +326,7 @@ transition: fade-out
 
 ```haskell 
 insert :: (Ord a) => a -> List a -> List a
-insert x Emp = Cons x Emp
+insert x Nil = Cons x Nil
 insert x (Cons y ys)
   | x <= y = Cons x (Cons y ys)
   | otherwise = Cons y (insert x ys) 
@@ -282,13 +335,13 @@ insert x (Cons y ys)
 
 ```haskell {7-9} 
 insert :: (Ord a) => a -> List a -> List a
-insert x Emp = Cons x Emp
+insert x Nil = Cons x Nil
 insert x (Cons y ys)
   | x <= y = Cons x (Cons y ys)
   | otherwise = Cons y (insert x ys) 
 
 insertSort :: (Ord a) => List a -> List a
-insertSort Emp = Emp
+insertSort Nil = Nil
 insertSort (Cons x xs) = insert x (insertSort xs)
 ```
 
@@ -297,21 +350,24 @@ insertSort (Cons x xs) = insert x (insertSort xs)
 
 </div>
 
+<div class="absolute bottom-0  right-0 p-10">
+{{ $page }}
+</div>
 ---
 level: 2
 transition: fade-out
 ---
 
-## Defining refinement type
+## A Refinement Type for `insert`
 
 <div px-30 py-20>
 
 ````md magic-move {lines: true}
 
 ```haskell {*|1} 
-{-@ insert :: x:_ -> {xs:_ | isSorted xs} -> {ys:_ | isSorted ys } @-}
+{-@ insert :: x : _ -> {xs : _ | isSorted xs} -> {ys : _ | isSorted ys } @-}
 insert :: (Ord a) => a -> List a -> List a
-insert x Emp = Cons x Emp
+insert x Nil = Cons x Nil
 insert x (Cons y ys)
   | x <= y = Cons x (Cons y ys)
   | otherwise = Cons y (insert x ys) 
@@ -320,19 +376,21 @@ insert x (Cons y ys)
 ````
 
 <div v-click mt-5>
-But we don't have 
-<code>isSorted</code> directive
-         defined in <span v-mark.red="3">refinement logic </span> 🤔
+The <code>isSorted</code> predicate
+         doesn't exist yet <span v-mark.red="3">at the level of refinement logic </span> 🤔
 </div>
 
 </div>
 
+<div class="absolute bottom-0  right-0 p-10">
+{{ $page }}
+</div>
 ---
 level: 2
 transition: fade-out
 ---
 
-## Lifting `isSorted` into Refinement Logic
+## Lifting `isSorted` into the Refinement Logic
 
 
 <div px-30 py-20>
@@ -341,19 +399,19 @@ transition: fade-out
 
 ```haskell  
 isSorted :: (Ord a) => List a -> Bool
-isSorted Emp = True
+isSorted Nil = True
 isSorted (Cons x xs) =
   isSorted xs && case xs of
-    Emp -> True
+    Nil -> True
     Cons x1 xs1 -> x <= x1
 ```
 ```haskell {*|1} 
 {-@ reflect isSorted @-}
 isSorted :: (Ord a) => List a -> Bool
-isSorted Emp = True
+isSorted Nil = True
 isSorted (Cons x xs) =
   isSorted xs && case xs of
-    Emp -> True
+    Nil -> True
     Cons x1 xs1 -> x <= x1
 ```
 
@@ -362,39 +420,42 @@ isSorted (Cons x xs) =
 {-@ LIQUID "--reflection" @-} 
 {-@ reflect isSorted @-}
 isSorted :: (Ord a) => List a -> Bool
-isSorted Emp = True
+isSorted Nil = True
 isSorted (Cons x xs) =
   isSorted xs && case xs of
-    Emp -> True
+    Nil -> True
     Cons x1 xs1 -> x <= x1
 ```
 
 ```haskell {3} 
 -- make sure you add this or enable reflection through cabal options
 {-@ LIQUID "--reflection" @-} 
-{-@ LIQUID "--ple" @-} 
+{-@ LIQUID "--ple" @-}  -- proof by logical evaluations
 {-@ reflect isSorted @-}
 isSorted :: (Ord a) => List a -> Bool
-isSorted Emp = True
+isSorted Nil = True
 isSorted (Cons x xs) =
   isSorted xs && case xs of
-    Emp -> True
+    Nil -> True
     Cons x1 xs1 -> x <= x1
 ```
 
 ```haskell {1} 
 {-@ measure isSorted @-}
 isSorted :: (Ord a) => List a -> Bool
-isSorted Emp = True
+isSorted Nil = True
 isSorted (Cons x xs) =
   isSorted xs && case xs of
-    Emp -> True
+    Nil -> True
     Cons x1 xs1 -> x <= x1
 ```
 ````
 
 </div>
 
+<div class="absolute bottom-0  right-0 p-10">
+{{ $page }}
+</div>
 ---
 level: 2
 transition: fade-out
@@ -408,29 +469,29 @@ transition: fade-out
 ````md magic-move {lines: true}
 
 ```haskell  
-{-@ sortedList' :: {v: Bool | v} @-}
-sortedList' = isSorted (Cons 2 (Cons 1 Emp))
+{-@ example1 :: {v: Bool | v} @-}
+example1 = isSorted (Cons 2 (Cons 1 Nil))
 ```
 ```haskell  {1-4}
 
 {-@ type TRUE  = {v:Bool | v    } @-}
 {-@ type FALSE = { v: Bool | not v } @-}
 
-{-@ sortedList' :: TRUE @-}
-sortedList' = isSorted (Cons 2 (Cons 1 Emp))
+{-@ example1 :: TRUE @-}
+example1 = isSorted (Cons 2 (Cons 1 Nil))
 ```
 
 ```haskell  {6-16}
 {-@ type TRUE  = {v:Bool | v    } @-}
 {-@ type FALSE = { v: Bool | not v } @-}
 
-{-@ sortedList' :: TRUE @-}
-sortedList' = isSorted (Cons 2 (Cons 1 Emp))
+{-@ example1 :: TRUE @-}
+example1 = isSorted (Cons 2 (Cons 1 Nil))
  >> .
  >> The inferred type
  >>   VV : {v : GHC.Types.Bool | (v == Demo.Sorting.isSorted 
  >>             (Demo.Sorting.Cons (GHC.Num.Integer.IS 2) 
- >>             (Demo.Sorting.Cons (GHC.Num.Integer.IS 1) Demo.Sorting.Emp)))
+ >>             (Demo.Sorting.Cons (GHC.Num.Integer.IS 1) Demo.Sorting.Nil)))
  >> .
  >> is not a subtype of the required type
  >>   VV : {VV##2509 : GHC.Types.Bool | VV##2509}
@@ -439,6 +500,9 @@ sortedList' = isSorted (Cons 2 (Cons 1 Emp))
 ````
 </div>
 
+<div class="absolute bottom-0  right-0 p-10">
+{{ $page }}
+</div>
 ---
 level: 2
 transition: fade-out
@@ -452,53 +516,57 @@ transition: fade-out
 ````md magic-move {lines: true}
 
 ```haskell  
-{-@ sortedList :: {v : () |  isSorted (Cons 1 (Cons 3  Emp)) == True} @-}
-sortedList :: ()
-sortedList = () -- Error: can't figure it out on its own
+{-@ example2 :: {v : () |  isSorted (Cons 1 (Cons 3  Nil)) == True} @-}
+example2 :: ()
+example2 = () -- Error: can't figure it out on its own
 ```
 
 ```haskell {1} 
 import Language.Haskell.Liquid.ProofCombinators
-{-@ sortedList :: {isSorted (Cons 1 (Cons 3  Emp)) == True} @-}
-sortedList :: ()
-sortedList = ()
+{-@ example2 :: {isSorted (Cons 1 (Cons 3  Nil)) == True} @-}
+example2 :: ()
+example2 = ()
 ```
 
 ```haskell {5-9}  
 import Language.Haskell.Liquid.ProofCombinators
-{-@ sortedList :: {isSorted (Cons 1 (Cons 3  Emp)) == True} @-}
-sortedList :: ()
-sortedList =
-  (isSorted (Cons 1 (Cons 3 Emp :: List Int)))
-    === (isSorted (Cons 3 Emp) && 1 <= 3)
-    === (isSorted (Emp :: List Int) && True && 1 <= 3)
+{-@ example2 :: {isSorted (Cons 1 (Cons 3  Nil)) == True} @-}
+example2 :: ()
+example2 =
+  (isSorted (Cons 1 (Cons 3 Nil :: List Int)))
+    === (isSorted (Cons 3 Nil) && 1 <= 3)
+    === (isSorted (Nil :: List Int) && True && 1 <= 3)
     === True
     *** QED
 ```
 ```haskell {1}  
 {-@ LIQUID "--ple" @-} 
-{-@ sortedList :: {isSorted (Cons 1 (Cons 3  Emp)) == True} @-}
-sortedList :: ()
-sortedList =
-  (isSorted (Cons 1 (Cons 3 Emp :: List Int)))
-    === (isSorted (Cons 3 Emp) && 1 <= 3)
-    === (isSorted (Emp :: List Int) && True && 1 <= 3)
+{-@ example2 :: {isSorted (Cons 1 (Cons 3  Nil)) == True} @-}
+example2 :: ()
+example2 =
+  (isSorted (Cons 1 (Cons 3 Nil :: List Int)))
+    === (isSorted (Cons 3 Nil) && 1 <= 3)
+    === (isSorted (Nil :: List Int) && True && 1 <= 3)
     === True
     *** QED
 ```
 ```haskell   
 {-@ LIQUID "--ple" @-} 
-{-@ sortedList :: {isSorted (Cons 1 (Cons 3  Emp)) == True} @-}
-sortedList :: ()
-sortedList = () -- LH can now evaluate it on it's own
+{-@ example2 :: {isSorted (Cons 1 (Cons 3  Nil)) == True} @-}
+example2 :: ()
+example2 = () -- LH can now evaluate it on it's own
 ```
 
 ````
 
 </div>
 
+<div class="absolute bottom-0  right-0 p-10">
+{{ $page }}
+</div>
+
 ---
-layout: normal
+layout: default
 level: 2
 transition: fade-out
 ---
@@ -511,81 +579,84 @@ transition: fade-out
 ````md magic-move {lines: true}
 
 ```haskell  {*|6} 
-{-@ insert :: x:_ -> {xs:_ | isSorted xs} -> {ys:_ | isSorted ys } @-}
+{-@ insert :: x : _ -> {xs : _ | isSorted xs} -> {ys : _ | isSorted ys } @-}
 insert :: (Ord a) => a -> List a -> List a
-insert x Emp = Cons x Emp
+insert x Nil = Cons x Nil
 insert x (Cons y ys)
   | x <= y = Cons x (Cons y ys)
   | otherwise = Cons y (insert x ys)  -- LH can't figure this out
 ```
 
 ```haskell {6}  
-{-@ insert :: x:_ -> {xs:_ | isSorted xs} -> {ys:_ | isSorted ys } @-}
+{-@ insert :: x : _ -> {xs : _ | isSorted xs} -> {ys : _ | isSorted ys } @-}
 insert :: (Ord a) => a -> List a -> List a
-insert x Emp = Cons x Emp
+insert x Nil = Cons x Nil
 insert x (Cons y ys)
   | x <= y = Cons x (Cons y ys)
   | otherwise = Cons y (insert x ys)  `withProof` lem_ins y x ys
 ```
 
 ```haskell {8-12|*}   
-{-@ insert :: x:_ -> {xs:_ | isSorted xs} -> {ys:_ | isSorted ys } @-}
+{-@ insert :: x : _ -> {xs : _ | isSorted xs} -> {ys : _ | isSorted ys } @-}
 insert :: (Ord a) => a -> List a -> List a
-insert x Emp = Cons x Emp
+insert x Nil = Cons x Nil
 insert x (Cons y ys)
   | x <= y = Cons x (Cons y ys)
   | otherwise = Cons y (insert x ys)  `withProof` lem_ins y x ys
 
-{-@ lem_ins :: y:_ -> {x:_ | y < x} -> {ys: _ | isSorted (Cons y ys)} 
+{-@ lem_ins :: y : _ -> {x : _ | y < x} -> {ys : _ | isSorted (Cons y ys)} 
     -> {isSorted (Cons y (insert x ys))} @-}
 lem_ins :: (Ord a) => a -> a -> List a -> Bool
-lem_ins y x Emp = True
+lem_ins y x Nil = True
 lem_ins y x (Cons y1 ys) = if y1 < x then lem_ins y1 x ys else True
 ```
 
 ```haskell{2,3}
 {-@ reflect insert @-}
-{-@ insert :: x:_ -> {xs:_ | isSorted xs} 
-    -> {ys:_ | isSorted ys && Map_union (singelton x) (bag xs) == bag ys  } @-}
+{-@ insert :: x : _ -> {xs : _ | isSorted xs} 
+    -> {ys : _ | isSorted ys && Map_union (singelton x) (bag xs) == bag ys  } @-}
 insert :: (Ord a) => a -> List a -> List a
-insert x Emp = Cons x Emp
+insert x Nil = Cons x Nil
 insert x (Cons y ys)
   | x <= y = Cons x (Cons y ys)
   | otherwise = Cons y (insert x ys) `withProof` lem_ins y x ys
 
-{-@ lem_ins :: y:_ -> {x:_ | y < x} -> {ys: _ | isSorted (Cons y ys)} 
+{-@ lem_ins :: y : _ -> {x : _ | y < x} -> {ys: _ | isSorted (Cons y ys)} 
     -> {isSorted (Cons y (insert x ys))} @-}
 lem_ins :: (Ord a) => a -> a -> List a -> Bool
-lem_ins y x Emp = True
+lem_ins y x Nil = True
 lem_ins y x (Cons y1 ys) = if y1 < x then lem_ins y1 x ys else True
 ```
 
 ```haskell{2-3,16-19}
 {-@ reflect insert @-}
-{-@ insert :: x:_ -> {xs:_ | isSorted xs} 
-    -> {ys:_ | isSorted ys && Map_union (singelton x) (bag xs) == bag ys  } @-}
+{-@ insert :: x : _ -> {xs : _ | isSorted xs} 
+    -> {ys : _ | isSorted ys && Map_union (singelton x) (bag xs) == bag ys  } @-}
 insert :: (Ord a) => a -> List a -> List a
-insert x Emp = Cons x Emp
+insert x Nil = Cons x Nil
 insert x (Cons y ys)
   | x <= y = Cons x (Cons y ys)
   | otherwise = Cons y (insert x ys) `withProof` lem_ins y x ys
 
-{-@ lem_ins :: y:_ -> {x:_ | y < x} -> {ys: _ | isSorted (Cons y ys)} 
+{-@ lem_ins :: y : _ -> {x : _ | y < x} -> {ys: _ | isSorted (Cons y ys)} 
     -> {isSorted (Cons y (insert x ys))} @-}
 lem_ins :: (Ord a) => a -> a -> List a -> Bool
-lem_ins y x Emp = True
+lem_ins y x Nil = True
 lem_ins y x (Cons y1 ys) = if y1 < x then lem_ins y1 x ys else True
 
-{-@ insertSort :: xs:_ -> {ys:_ | isSorted ys && bag xs == bag ys} @-}
+{-@ insertSort :: xs : _ -> {ys : _ | isSorted ys && bag xs == bag ys} @-}
 insertSort :: (Ord a) => List a -> List a
-insertSort Emp = Emp
+insertSort Nil = Nil
 insertSort (Cons x xs) = insert x (insertSort xs)
 ```
 
 ````
-<div v-click="[4, 5]"  >Is all the original elements exist in sorted list 🤔</div>
+<div v-click="[4, 5]"  >But are the elements of the sorted list the same as those of the original list?</div>
 </div>
 
+<div class="absolute bottom-0  right-0 p-10">
+{{ $page }}
+</div>
 ---
 layout: two-cols
 ---
@@ -604,4 +675,3 @@ layout: two-cols
 <img  src="./images/qr-code.png">
 
 </div>
-
