@@ -196,22 +196,77 @@ x = tail []
 ---
 level: 1
 ---
-# SAT
+
+# Propositional Logic
+- Definition: Logic with connectives ¬ (not), ∧ (and), ∨ (or), and atomic propositions (variables).
+- Purpose: Forms the foundation of the Boolean Satisfiability Problem (SAT).
+
+<br>
+
+# SAT: Boolean Satisfiability Problem
+- Problem Statement: Given a formula in propositional logic, determine if there exists a variable assignment that makes the formula true.
+- Formula: (A∨¬B)∧(B∨C)
+- Goal: Find truth values for A, B, and C to satisfy the formula.
+- Complexity: The SAT problem is NP-complete.
+
+
+
+<div class="absolute bottom-0  right-0 p-10">
+{{ $page }}
+</div>
+<!-- NP-complete=> there is no efficient algrithem to solve it quickly, but you can verify the solution by in polynomial time
+    complete=> non determinestic polynomial time    -->
+---
+
+
+---
+
+# SAT Solvers
+<br>
 <v-clicks>
 
-- **Definition:** Determines if a Boolean formula can be satisfied by assigning truth values to variables.  
+- Definition: Tools that solve the SAT problem using efficient algorithms.
 
-- **Problem:** Find an assignment that makes the formula true.  
+- Core Idea: Use optimized techniques (e.g., conflict-driven clause learning) to handle large formulas.
 
-- **Example:** (𝐴 ∨ ¬𝐵) ∧ (𝐵 ∨ 𝐶)  
-  - Satisfying assignment: $A = \text{true}, B = \text{false}, C = \text{true}$.  
-- **SAT Solvers:** Efficient algorithms to solve SAT problems.  
-- **Applications:**  
-  - Formal verification (software and hardware).  
-  - Liquid Haskell (SMT solvers for program verification).  
+- Aplications:
+  - Formal verification
+  - Optimization problems
+  - Automated reasoning
 
 </v-clicks>
+<div class="absolute bottom-0  right-0 p-10">
+{{ $page }}
+</div>
+---
+level: 1
+---
+
+# SMT: Satisfiability Modulo Theories
+Extends SAT solvers by adding theories with decision procedures, that Enables reasoning about more expressive formulas beyond pure propositional logic.
+
+<v-clicks depth="2">
+
+### Supported Theories
+  - Linear Integer Arithmetic: Deals with linear constraints over integers or real numbers (e.g., x+y≤10).
+    Fully decidable in the linear case.
+  - Non-linear Arithmetic: Includes operations like multiplication or division. Decision procedures are more limited—often undecidable in the general case but solvable for specific subclasses.
+  - Equality with Uninterpreted Functions:Abstract reasoning about function calls without implementations.
+    Useful in modular verification.(e.g.,congruence)
+  - Arrays:Models indexed collections of elements (finite maps). Includes operations like read (access) and write (update).
+  - Algebraic Data Types: Represents types constructed from other types:
+    - Product Types: Combinations of types (e.g., tuples or records).
+    - Coproduct Types: Alternatives among types (e.g., unions or sum types).
+</v-clicks>
 <br>
+<v-click>
+
+### SMT Solvers
+Examples: Z3, CVC5, MathSAT, Yices.
+
+</v-click>
+
+
 
 <div class="absolute bottom-0  right-0 p-10">
 {{ $page }}
@@ -221,33 +276,6 @@ level: 1
 level: 1
 ---
 
-# SMT Solver
-
-SMT (Satisfiability Modulo Theories) solvers are tools that can check the satisfiability of logical
-formulas in a specific theory. 
-
-
-Extends SAT solvers by adding various theories:
-
-- **Uninterpreted Functions**: Functions without a fixed interpretation.
-
-- **Arithmetic**: Involves numerical calculations and equations.
-
-- **Arrays**: Data structures that store elements in indexed collections.
-
-- **Algebraic Datatypes**: Data types defined by combining other types.
-
-example:
-$$
-x + y \leq 10 \quad and \quad x = y - 7
-$$
-
-
-<div class="absolute bottom-0  right-0 p-10">
-{{ $page }}
-</div>
----
----
 # Z3 Architecture
 
 <div class="custom-image-container">
@@ -255,9 +283,6 @@ $$
 </div>
 
 
-<!--
-Hello
--->
 <style>
 .custom-image-container {
   display: flex;
@@ -272,6 +297,60 @@ Hello
 <div class="absolute bottom-0  right-0 p-10">
 {{ $page }}
 </div>
+
+<!--
+The architecture of Z3 :
+designed to solve Satisfiability Modulo Theories (SMT) problems. 
+
+Interfaces to Z3: interacted with SMT-LIB2 scripts 
+or through API calls in high-level programming languages, 
+with a focus on the Python front-end.
+
+Logical Formulas: Z3 accepts logical formulas built from atomic variables and logical connectives, integrating symbols from multiple theories. These formulas follow the SMT-LIB2 standard.
+
+Theories: Z3 supports multiple theories, 
+Equality and Uninterpreted Functions (EUF),
+ Arithmetic (linear and non-linear),
+ Arrays, Bit-Vectors, Algebraic Datatypes, Sequences, and Strings.
+
+Solver: Z3 provides services for deciding the satisfiability of formulas, handling incrementality, scopes, assumptions, cores, models, and more. Specialized solvers include:
+
+SMT Solver: Integrates various theories by the CDCL(T) architecture.
+
+Fixedpoint Solver: reasoning recursive 
+definitions and fixed-point computations.
+
+NLSat Solver:non-linear arithmetic problems
+
+SAT Solver: propositional logic problems.
+
+QSAT Solver: Handles quantified Boolean formulas (QBF).
+
+
+Tactics: Used for pre-processing, simplifying formulas, and creating sub-goals. Examples include:
+
+Preprocessing: Simplifies input formulas.
+
+Cube and Conquer: Partitions the search 
+space into smaller sub-problems.
+
+Tacticals: Combinators for composing 
+multiple tactics.
+
+Optimization: Z3 provides optimization 
+services to solve satisfiability 
+problems while maximizing or minimizing 
+objective functions.
+
+The architecture of Z3 is designed to be 
+flexible and powerful, supporting a wide 
+range of logical theories and providing 
+robust solver services. It allows for 
+efficient interaction through various 
+interfaces and includes advanced features
+ for optimization and logical analysis.
+-->
+
 ---
 layout: section
 ---
