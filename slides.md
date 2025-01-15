@@ -191,12 +191,15 @@ level: 1
 
 <br>
 
+<v-click>
+
 # SAT: Boolean Satisfiability Problem
 - Problem Statement: Given a formula in propositional logic, determine if there exists a variable assignment that makes the formula true.
 - Formula: (A∨¬B)∧(B∨C)
 - Goal: Find truth values for A, B, and C to satisfy the formula.
 - Complexity: The SAT problem is NP-complete.
 
+</v-click>
 
 
 <div class="absolute bottom-0  right-0 p-10">
@@ -204,9 +207,8 @@ level: 1
 </div>
 <!-- NP-complete=> there is no efficient algrithem to solve it quickly, but you can verify the solution by in polynomial time
     complete=> non determinestic polynomial time    -->
+
 ---
-
-
 ---
 
 # SAT Solvers
@@ -233,9 +235,14 @@ level: 1
 # SMT: Satisfiability Modulo Theories
 Extends SAT solvers by adding theories with decision procedures, that Enables reasoning about more expressive formulas beyond pure propositional logic.
 
-<v-clicks depth="2">
+<v-click>
 
 ### Supported Theories
+
+</v-click>
+
+<v-clicks depth="2">
+
   - Linear Integer Arithmetic: Deals with linear constraints over integers or real numbers (e.g., x+y≤10).
     Fully decidable in the linear case.
   - Non-linear Arithmetic: Includes operations like multiplication or division. Decision procedures are more limited—often undecidable in the general case but solvable for specific subclasses.
@@ -423,6 +430,10 @@ $$(Tie \lor Shirt) \land (\lnot Tie \lor Shirt) \land (\lnot Tie \lor \lnot Shir
 ```
 ````
   </div>
+</div>
+
+<div class="absolute bottom-0  right-0 p-10">
+{{ $page }}
 </div>
 
 ---
