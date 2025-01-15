@@ -104,6 +104,16 @@ Here is another comment.
 <div class="absolute bottom-0  right-0 p-10">
 {{ $page }}
 </div>
+
+---
+level: 3
+---
+# Table of content
+<Toc   maxDepth='1' mode='sibling'/>
+
+<div class="absolute bottom-0  right-0 p-10">
+{{ $page }}
+</div>
 ---
 level: 1
 ---
@@ -181,6 +191,33 @@ x = tail []
 <div class="absolute bottom-0  right-0 p-10">
 {{ $page }}
 </div>
+
+---
+level: 2
+---
+
+# Refinement Types
+
+<div class="custom-image-container" >
+<img  src="./images/RT.png">
+</div>
+
+
+<style>
+.custom-image-container {
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center;    /* Center vertically */
+}
+.custom-image-container img {
+  max-width: 80%; /* Prevent image overflow */
+  height: auto;    /* Maintain aspect ratio */
+}</style>
+
+<div class="absolute bottom-0  right-0 p-10">
+{{ $page }}
+</div>
+
 ---
 level: 1
 ---
@@ -437,6 +474,34 @@ $$(Tie \lor Shirt) \land (\lnot Tie \lor Shirt) \land (\lnot Tie \lor \lnot Shir
 </div>
 
 ---
+---
+## SMT example of Equality and Uninterpreted Function
+<br>
+<br>
+
+````md magic-move {lines: true}
+
+```python
+ S = DeclareSort('S')
+ f = Function('f', S, S)
+ x = Const('x', S)
+ solve(f(f(x)) == x, f(f(f(x))) == x)
+ solve(f(f(x)) == x, f(f(f(x))) == x, f(x) != x)
+```
+```python {4-5}
+ S = DeclareSort('S')
+ f = Function('f', S, S)
+ x = Const('x', S)
+ solve(f(f(x)) == x, f(f(f(x))) == x) # can be solved when f is `identity`
+ solve(f(f(x)) == x, f(f(f(x))) == x, f(x) != x) # there is no solution
+```
+````
+
+<div class="absolute bottom-0  right-0 p-10">
+{{ $page }}
+</div>
+
+---
 layout: section
 ---
 # Verifying Insertion Sort
@@ -453,7 +518,7 @@ level: 2
 
 <div px-30 py-20>
 
-```json {*|7-13|15}
+```json {*|9-11|16}
  // .cabal 
  cabal-version: 1.12
 
@@ -582,19 +647,6 @@ isSorted (Cons x xs) =
 ```haskell {1-2} 
 -- make sure you add this or enable reflection through cabal options
 {-@ LIQUID "--reflection" @-} 
-{-@ reflect isSorted @-}
-isSorted :: (Ord a) => List a -> Bool
-isSorted Nil = True
-isSorted (Cons x xs) =
-  isSorted xs && case xs of
-    Nil -> True
-    Cons x1 xs1 -> x <= x1
-```
-
-```haskell {3} 
--- make sure you add this or enable reflection through cabal options
-{-@ LIQUID "--reflection" @-} 
-{-@ LIQUID "--ple" @-}  -- proof by logical evaluations
 {-@ reflect isSorted @-}
 isSorted :: (Ord a) => List a -> Bool
 isSorted Nil = True
@@ -822,6 +874,56 @@ insertSort (Cons x xs) = insert x (insertSort xs)
 {{ $page }}
 </div>
 ---
+---
+
+# Refinement Data Type 
+
+<div px-30 py-10>
+
+````md magic-move {lines: true}
+
+```haskell  
+data IncList a =
+    Emp
+  | (:<) { hd :: a, tl :: IncList a }
+
+infixr 9 :<
+```
+```haskell {7-9} 
+data IncList a =
+    Emp
+  | (:<) { hd :: a, tl :: IncList a }
+
+infixr 9 :<
+
+{-@ data IncList a =
+        Emp
+      | (:<) { hd :: a, tl :: IncList {v:a | hd <= v}}  @-}
+```
+```haskell {11-15} 
+data IncList a =
+    Emp
+  | (:<) { hd :: a, tl :: IncList a }
+
+infixr 9 :<
+
+{-@ data IncList a =
+        Emp
+      | (:<) { hd :: a, tl :: IncList {v:a | hd <= v}}  @-}
+
+okList :: IncList Int
+okList  = 1 :< 2 :< 3 :< Emp      -- accepted by LH
+
+badList :: IncList Int
+badList = 2 :< 1 :< 3 :< Emp      -- rejected by LH
+```
+````
+</div>
+
+<div class="absolute bottom-0  right-0 p-10">
+{{ $page }}
+</div>
+---
 layout: two-cols
 ---
 
@@ -829,7 +931,8 @@ layout: two-cols
 
 - [GitHub (code examples and seminar report)](https://github.com/m3hransh/seminar-pl) 
 - [LiquidHaskell Documentation](https://ucsd-progsys.github.io/liquidhaskell/) 
-
+- [Z3 Docs](https://z3prover.github.io/papers/programmingz3.html) 
+- [Update Tutorial](https://nikivazou.github.io/lh-course/)
 <footer class="absolute bottom-0 left-0 right-0 p-10">
 <PoweredBySlidev mt-10 />
 </footer>
